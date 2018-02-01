@@ -1,11 +1,9 @@
 import logging
 import json
 from distance_calculator import great_circle
-from pylru import lrudecorator
 from jsonschema import validate, ValidationError
 
 logger = logging.getLogger(__name__)
-
 
 guest_schema = {
     "type": "object",
@@ -19,7 +17,7 @@ guest_schema = {
 }
 
 
-class Guests(object):
+class FindGuests(object):
 
     def __init__(self, location_point):
         """Class to load, filter and sorts a list of guests.
@@ -29,7 +27,24 @@ class Guests(object):
             Example: (53.339428, -6.257664)
         :type location_point: tuple
         """
-        self.location_point = location_point
+        if not isinstance(location_point, great_circle.Point):
+            self.location_point = great_circle.Point.from_tuple(location_point)
+        else:
+            self.location_point = location_point
+
+    def _load_json(self, json_string):
+        """Tries to load a json.
+
+        :param json_string: A json encoded string.
+        :type json_string: str
+        :return: A python representation of the json.
+        """
+        loaded_json = None
+        try:
+            loaded_json = json.loads(json_string)
+        except ValueError:
+            logger.warning("Couldn't load invalid entry: %s", json_string)
+        return loaded_json
 
     @staticmethod
     def _validate_guest_object(guest_object):
@@ -45,12 +60,8 @@ class Guests(object):
         """
         try:
             validate(guest_object, guest_schema)
-            latitude = float(guest_object["latitude"])
-            longitude = float(guest_object["longitude"])
-            if longitude < -180 or longitude > 180:
-                raise ValueError
-            if latitude < -90 or latitude > 90:
-                raise ValueError
+            latitude, longitude = great_circle.Point.validate(
+                guest_object["latitude"], guest_object["longitude"])
             guest_object["latitude"] = latitude
             guest_object["longitude"] = longitude
         except (ValidationError, ValueError):
@@ -66,13 +77,17 @@ class Guests(object):
         :return: A list of dicts with the guests information.
         """
         guest_list = []
-        with open(guest_file_url) as guest_file:
-            line = guest_file.readline()
-            while line:
-                guest_object = json.loads(line)
-                if self._validate_guest_object(guest_object):
-                    guest_list.append(guest_object)
+        try:
+            with open(guest_file_url) as guest_file:
                 line = guest_file.readline()
+                while line:
+                    guest_object = self._load_json(line)
+                    if (guest_object is not None
+                            and self._validate_guest_object(guest_object)):
+                        guest_list.append(guest_object)
+                    line = guest_file.readline()
+        except IOError:
+            logger.warning("File %s Not Found.", guest_file_url)
         return guest_list
 
     def _filter_by_radius(self, guest_object, proximity_radius):
@@ -117,4 +132,3 @@ class Guests(object):
         guest_list.sort(key=lambda x: x[0], reverse=reverse)
 
         return guest_list
-

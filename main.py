@@ -1,9 +1,9 @@
-from celebration_app.guest_list import Guests
+from celebration_app.guests import FindGuests
 
 
 def main():
     office_location = (53.339428, -6.257664)
-    guests = Guests(office_location)
+    guests = FindGuests(office_location)
     guest_list = guests.get_guest_list("assets/customers.txt", 100)
     print "\n{:10}{}".format("User Id", "Name")
     for guest in guest_list:

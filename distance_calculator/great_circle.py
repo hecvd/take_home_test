@@ -13,8 +13,8 @@ class Point(object):
         :param longitude: The longitude of a point in degrees.
         :type longitude: float
         """
-        self.latitude = latitude
-        self.longitude = longitude
+
+        self.latitude, self.longitude = self.validate(latitude, longitude)
 
         self.radians_latitude = radians(latitude)
         self.radians_longitude = radians(longitude)
@@ -24,6 +24,29 @@ class Point(object):
 
         self.sin_longitude = sin(self.radians_longitude)
         self.cos_longitude = cos(self.radians_longitude)
+
+    @classmethod
+    def validate(cls, latitude, longitude):
+        """Checks if a geographical point is within range.
+
+        :param latitude: The latitude of a point in degrees.
+        :type latitude: float
+        :param longitude: The longitude of a point in degrees.
+        :type longitude: float
+        :raises ValueError if longitude is outside 0 and +/-180 range or if
+            latitude is outside 0 and +/-90 range. Also if either value cannot
+            be converted to float.
+        :return: Tuple with a float latitude and longitude.
+        :rtype: tuple
+        """
+        longitude = float(longitude)
+        latitude = float(latitude)
+
+        if longitude < -180 or longitude > 180:
+            raise ValueError
+        if latitude < -90 or latitude > 90:
+            raise ValueError
+        return latitude, longitude
 
     @classmethod
     def from_tuple(cls, tuple_point):
