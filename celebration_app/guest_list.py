@@ -31,7 +31,8 @@ class Guests(object):
         """
         self.location_point = location_point
 
-    def _validate_guest_object(self, guest_object):
+    @staticmethod
+    def _validate_guest_object(guest_object):
         """Validates all the possible errors a guest input might have.
 
         This function tests for a valid longitude and latitude, and json schema

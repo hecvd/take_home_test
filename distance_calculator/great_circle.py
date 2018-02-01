@@ -1,4 +1,3 @@
-from collections import namedtuple
 from math import radians, sin, cos, atan2, sqrt
 
 EARTH_RADIUS = 6371.009
