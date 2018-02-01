@@ -8,6 +8,10 @@ guest_list_page = Blueprint(
 
 @guest_list_page.route("/")
 def show_guest_list():
+    """Renders the list of guests within a 100km radius.
+
+    :return: A rendered HTML ready to be handled by flask.
+    """
     try:
         office_location = (53.339428, -6.257664)
         guests = Guests(office_location)

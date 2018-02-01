@@ -1,13 +1,6 @@
 How To Use:
 
-##Console version:
-
-No requirements needed, just run:
-```
-$ python main.py
-```
-
-## Web Version:
+## Install requirements:
 
 Install the requirements for the app with this command:
 
@@ -17,7 +10,16 @@ Install the requirements for the app with this command:
 $ pip install -r requirements.txt
 ```
 
-Then run
+##Console version:
+
+To run the console version of the app, use this command:
+```
+$ python main.py
+```
+
+## Web Version:
+
+To run the web version of the app, use this command:
 ```
 $ python flask_server.py
 ```
