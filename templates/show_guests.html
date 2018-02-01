@@ -1,0 +1,19 @@
+{% extends "layout.html" %}
+{% block body %}
+    <table>
+        <caption>Guests within 100Km radius.</caption>
+
+        <tr>
+            <th>User Id</th>
+            <th>Name</th>
+        </tr>
+
+        {% for guest in guest_list %}
+        <tr>
+            <th>{{ guest[0] }}</th>
+            <th>{{ guest[1] }}</th>
+        </tr>
+        {% endfor %}
+    </table>
+    <div id="count">Guests Count:{{ guest_list|length }}</div>
+{% endblock %}
